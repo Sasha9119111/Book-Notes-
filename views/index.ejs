@@ -1,0 +1,92 @@
+<!-- views/index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search</title>
+    <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <div class="movies">
+    <div class="navbar">
+    <h1 class="h2">Book Search</h1>
+    <form action="/search" method="POST">
+        <input class="input" type="text" name="searchTerm" placeholder="Enter book title">
+        <button type="submit">Search</button>
+        <div id="s-circle"></div>
+    </div>
+     
+    <ul>
+        <% books.forEach(book => { %>
+            <div class="book">
+            <li>
+                <h2><%=  %></h2>
+                <% if (book.author_name) { %>
+                    <p>Author: <%= book.author_name.join(', ') %></p>
+                <% } %>
+                <% if (book.cover_i) { %>
+                    <img src="https://covers.openlibrary.org/b/id/<%= book.cover_i %>-M.jpg" alt="Book Cover">
+                <% } %>
+                
+            </li>
+        </div>
+        <% }); %>
+    </ul>
+  </div>
+
+  <ul>
+    <% books.forEach(book => { %>
+        <div class="book">
+            <li>
+                <h2><%= book.title %></h2>
+                <p>Author: <%= book.author %></p>
+                <p>Published Date: <%= book.published_date %></p>
+                <p>ISBN: <%= book.isbn %></p>
+                <p>Description: <%= book.description %></p>
+                <img src="<%= book.cover_url %>" alt="Book Cover">
+                <!-- Кнопка для видалення книги -->
+                <form action="">
+                <button class="button" type="button" type="submit" onclick="deleteBook('<%= book.id %>')">Delete</button>
+                </form>
+            </li>
+        </div>
+    <% }); %>
+</ul>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Отримуємо всі <li> елементи в списку
+    var listItems = document.querySelectorAll("li");
+
+    // Перевіряємо кожен <li> елемент і видаляємо його, якщо він пустий
+    listItems.forEach(function(item) {
+        if (item.textContent.trim() === "") {
+            item.remove(); // Видаляємо пустий <li> елемент
+        }
+    });
+});
+
+</script>
+
+
+<script>
+    async function deleteBook(bookId) {
+        try {
+            const response = await fetch(`/delete/${bookId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                location.reload(); // Оновити сторінку після успішного видалення
+            } else {
+                console.error('Delete request failed');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+</script>
+</body>
+</html>
